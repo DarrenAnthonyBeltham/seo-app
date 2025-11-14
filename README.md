@@ -149,7 +149,7 @@ Visit: `http://localhost:8000/admin`
 | id_ringkasan_profil_internal_link | VARCHAR(255) | Internal link profile summary ID |
 | id_ringkasan_analisa_kata_kunci | VARCHAR(255) | Keyword analysis summary ID |
 | id_ringkasan_volume_kata_kunci | VARCHAR(255) | Keyword volume summary ID |
-| resiko_ymyl | VARCHAR(255) | YMYL risk level |
+| resiko_ymyl | TEXT | YMYL risk level |
 | analisa_perluasan_kata_kunci | TEXT | Keyword expansion analysis |
 | analisa_pola_struktur_konten | TEXT | Content structure pattern analysis |
 | analisa_standar_outline | TEXT | Standard outline analysis |
