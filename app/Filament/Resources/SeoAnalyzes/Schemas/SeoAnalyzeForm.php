@@ -69,9 +69,17 @@ class SeoAnalyzeForm
                                     ->maxLength(255)
                                     ->columnSpan(1),
                             ]),
-                        TextInput::make('id_visual_serp')
-                            ->label('ID Visual SERP')
-                            ->maxLength(255),
+                        Grid::make(2)
+                            ->schema([
+                                TextInput::make('id_visual_serp')
+                                    ->label('ID Visual SERP')
+                                    ->maxLength(255)
+                                    ->columnSpan(1),
+                                TextInput::make('id_daftar_url_serp')
+                                    ->label('ID Daftar URL SERP')
+                                    ->maxLength(255)
+                                    ->columnSpan(1),
+                            ]),
                         Textarea::make('daftar_5_referensi_url')
                             ->label('Daftar 5 Referensi URL')
                             ->rows(4)
