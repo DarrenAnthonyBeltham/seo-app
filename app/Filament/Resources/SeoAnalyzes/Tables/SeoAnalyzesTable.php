@@ -8,9 +8,11 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Textarea;
+use Filament\Notifications\Notification;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Http;
 
 class SeoAnalyzesTable
 {
@@ -70,6 +72,52 @@ class SeoAnalyzesTable
                         $record->update([
                             'komentar_url_analisa' => $data['komentar_url_analisa'] ?? null,
                         ]);
+                    }),
+                Action::make('triggerPdfWebhook')
+                    ->label('Trigger Webhook')
+                    ->icon('heroicon-o-share')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->visible(fn(SeoAnalyze $record): bool => $record->status === 'generate to pdf')
+                    ->action(function (SeoAnalyze $record): void {
+                        $url = config('services.make_webhook.url');
+                        $apiKey = config('services.make_webhook.api_key');
+
+                        if (empty($url) || empty($apiKey)) {
+                            Notification::make()
+                                ->title('Konfigurasi webhook belum lengkap.')
+                                ->body('Pastikan MAKE_WEBHOOK_URL dan MAKE_WEBHOOK_API_KEY sudah diatur.')
+                                ->danger()
+                                ->send();
+
+                            return;
+                        }
+
+                        $response = Http::withHeaders([
+                            'x-make-apikey' => $apiKey,
+                        ])->post($url, [
+                            'seo_analyze_id' => $record->id,
+                            'status' => $record->status,
+                            'target_url' => $record->target_url,
+                            'url_analisa' => $record->url_analisa,
+                            'kata_kunci_utama' => $record->kata_kunci_utama,
+                        ]);
+
+                        if ($response->successful()) {
+                            $record->update(['status' => 'pdf generated']);
+
+                            Notification::make()
+                                ->title('Webhook berhasil dikirim')
+                                ->body('Status telah diperbarui menjadi PDF Generated.')
+                                ->success()
+                                ->send();
+                        } else {
+                            Notification::make()
+                                ->title('Webhook gagal dikirim')
+                                ->body($response->body() ?: 'Periksa log aplikasi untuk detailnya.')
+                                ->danger()
+                                ->send();
+                        }
                     }),
                 EditAction::make(),
             ])

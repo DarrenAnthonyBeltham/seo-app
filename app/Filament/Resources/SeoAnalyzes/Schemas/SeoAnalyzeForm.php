@@ -107,7 +107,7 @@ class SeoAnalyzeForm
                                         'generate to pdf' => 'Generate to PDF',
                                         'pdf generated' => 'PDF Generated',
                                     ])
-                                    ->default('mulai analisa')
+                                    ->default('mulai analisa ke 2')
                                     ->required()
                                     ->columnSpan(1),
                                 TextInput::make('kata_kunci_utama')

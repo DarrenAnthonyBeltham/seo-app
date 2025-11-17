@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'make_webhook' => [
+        'url' => env('MAKE_WEBHOOK_URL', 'https://hook.eu2.make.com/tloehyubrkr5s3qjkw61w7494xikkdy7'),
+        'api_key' => env('MAKE_WEBHOOK_API_KEY', 'dsay-apai-;:6Ums.E*h;^lj#T@Aikk/ue\\3r;}ISPL>h2q|"j8Q!Z4t%H_q@+z1`'),
+    ],
+
 ];
