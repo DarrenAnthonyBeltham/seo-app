@@ -21,9 +21,9 @@ class ListSeoAnalyzes extends ListRecords
             Actions\CreateAction::make()
                 ->label('New Analysis'),
             Actions\Action::make('triggerWebhookAll')
-                ->label('Trigger Webhook')
+                ->label('Generate PDF')
                 ->color('success')
-                ->icon('heroicon-o-share')
+                ->icon('heroicon-o-document-text')
                 ->requiresConfirmation()
                 ->action(function (): void {
                     $records = SeoAnalyze::query()
