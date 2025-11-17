@@ -52,7 +52,7 @@ class ListSeoAnalyzes extends ListRecords
                         return;
                     }
 
-                    $failed = [];
+                $failed = [];
 
                     foreach ($records as $record) {
                         $response = Http::withHeaders([
@@ -65,17 +65,15 @@ class ListSeoAnalyzes extends ListRecords
                             'kata_kunci_utama' => $record->kata_kunci_utama,
                         ]);
 
-                        if ($response->successful()) {
-                            $record->update(['status' => 'pdf generated']);
-                        } else {
+                        if (! $response->successful()) {
                             $failed[] = $record->id;
                         }
                     }
 
                     if (empty($failed)) {
                         Notification::make()
-                            ->title('Webhook berhasil dikirim')
-                            ->body('Semua data telah diperbarui menjadi PDF Generated.')
+                        ->title('Webhook berhasil dikirim')
+                        ->body('Semua data berhasil dikirim ke webhook.')
                             ->success()
                             ->send();
                     } else {
