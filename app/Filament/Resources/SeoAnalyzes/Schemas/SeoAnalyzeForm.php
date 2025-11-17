@@ -97,19 +97,17 @@ class SeoAnalyzeForm
                                     ->label('Ringkasan Profil Backlink')
                                     ->rows(4)
                                     ->autosize()
-                                    ->columnSpan(1),
+                                    ->columnSpan(2),
                                 TextInput::make('id_ringkasan_profil_backlink')
                                     ->label('ID Ringkasan Profil Backlink')
                                     ->maxLength(255)
                                     ->columnSpan(1),
-                            ]),
-                        Grid::make(2)
-                            ->schema([
+                            
                                 Textarea::make('ringkasan_profil_internal_link')
                                     ->label('Ringkasan Profil Internal Link')
                                     ->rows(4)
                                     ->autosize()
-                                    ->columnSpan(1),
+                                    ->columnSpan(2),
                                 TextInput::make('id_ringkasan_profil_internal_link')
                                     ->label('ID Ringkasan Profil Internal Link')
                                     ->maxLength(255)
@@ -128,111 +126,26 @@ class SeoAnalyzeForm
                                     ->label('Ringkasan Analisa Kata Kunci')
                                     ->rows(4)
                                     ->autosize()
-                                    ->columnSpan(1),
+                                    ->columnSpan(2),
                                 TextInput::make('id_ringkasan_analisa_kata_kunci')
                                     ->label('ID Ringkasan Analisa Kata Kunci')
                                     ->maxLength(255)
                                     ->columnSpan(1),
-                            ]),
-                        Grid::make(2)
-                            ->schema([
+                            
                                 Textarea::make('ringkasan_volume_kata_kunci')
                                     ->label('Ringkasan Volume Kata Kunci')
                                     ->rows(4)
                                     ->autosize()
-                                    ->columnSpan(1),
+                                    ->columnSpan(2),
                                 TextInput::make('id_ringkasan_volume_kata_kunci')
                                     ->label('ID Ringkasan Volume Kata Kunci')
                                     ->maxLength(255)
                                     ->columnSpan(1),
                             ]),
-                        TextArea::make('resiko_ymyl')
-                            ->label('Resiko YMYL')
-                            ->rows(3)
-                            ->autosize(),
                     ])
                     ->collapsible()
                     ->persistCollapsed()
                     ->id('analisa-kata-kunci'),
-
-                Section::make('Analisa Lanjutan')
-                    ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                Textarea::make('analisa_perluasan_kata_kunci')
-                                    ->label('Analisa Perluasan Kata Kunci')
-                                    ->rows(4)
-                                    ->autosize()
-                                    ->columnSpan(1),
-                                Textarea::make('analisa_pola_struktur_konten')
-                                    ->label('Analisa Pola Struktur Konten')
-                                    ->rows(4)
-                                    ->autosize()
-                                    ->columnSpan(1),
-                            ]),
-                        Grid::make(2)
-                            ->schema([
-                                Textarea::make('analisa_standar_outline')
-                                    ->label('Analisa Standar Outline')
-                                    ->rows(4)
-                                    ->autosize()
-                                    ->columnSpan(1),
-                                Textarea::make('analisa_jenis_konten_pilihan')
-                                    ->label('Analisa Jenis Konten Pilihan')
-                                    ->rows(4)
-                                    ->autosize()
-                                    ->columnSpan(1),
-                            ]),
-                        Grid::make(2)
-                            ->schema([
-                                Textarea::make('analisa_audiens_intensi_demografi')
-                                    ->label('Analisa Audiens Intensi Demografi')
-                                    ->rows(4)
-                                    ->autosize()
-                                    ->columnSpan(1),
-                                Textarea::make('analisa_generatif_ai_optimization')
-                                    ->label('Analisa Generatif AI Optimization')
-                                    ->rows(4)
-                                    ->autosize()
-                                    ->columnSpan(1),
-                            ]),
-                    ])
-                    ->collapsible()
-                    ->persistCollapsed()
-                    ->id('analisa-lanjutan'),
-
-                Section::make('Pengujian & Hasil')
-                    ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                Textarea::make('analisa_pengujian_kualitas_konten')
-                                    ->label('Analisa Pengujian Kualitas Konten')
-                                    ->rows(4)
-                                    ->autosize()
-                                    ->columnSpan(1),
-                                Textarea::make('analisa_pengujian_peringkat')
-                                    ->label('Analisa Pengujian Peringkat')
-                                    ->rows(4)
-                                    ->autosize()
-                                    ->columnSpan(1),
-                            ]),
-                        Grid::make(2)
-                            ->schema([
-                                Textarea::make('analisa_pengujian_kebijakan_spam')
-                                    ->label('Analisa Pengujian Kebijakan Spam')
-                                    ->rows(4)
-                                    ->autosize()
-                                    ->columnSpan(1),
-                                Textarea::make('result_rencana_optimasi')
-                                    ->label('Result Rencana Optimasi')
-                                    ->rows(4)
-                                    ->autosize()
-                                    ->columnSpan(1),
-                            ]),
-                    ])
-                    ->collapsible()
-                    ->persistCollapsed()
-                    ->id('pengujian-hasil'),
             ]);
     }
 }
