@@ -7,10 +7,89 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 
 class SeoAnalyzeForm
 {
+    /**
+     * Extract Google Drive ID from URL
+     */
+    private static function extractGoogleDriveId(?string $url): ?string
+    {
+        if (empty($url)) {
+            return null;
+        }
+
+        // Pattern: https://drive.google.com/file/d/{ID}/view
+        if (preg_match('/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/', $url, $matches)) {
+            return $matches[1];
+        }
+
+        // Pattern: https://drive.google.com/drive/folders/{ID}
+        if (preg_match('/drive\.google\.com\/drive\/(?:u\/\d+\/)?folders\/([a-zA-Z0-9_-]+)/', $url, $matches)) {
+            return $matches[1];
+        }
+
+        // Pattern: query parameter ?id={ID}
+        $parsedUrl = parse_url($url);
+        if (!empty($parsedUrl['query'])) {
+            parse_str($parsedUrl['query'], $queryParams);
+            if (!empty($queryParams['id'])) {
+                return $queryParams['id'];
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Create an ID input field with Google Drive ID extraction
+     */
+    private static function makeIdInput(string $name, string $label): TextInput
+    {
+        return TextInput::make($name)
+            ->label($label)
+            ->maxLength(255)
+            ->placeholder('Masukkan ID atau URL Google Drive')
+            ->disabled()
+            ->dehydrated(true)
+            ->live(onBlur: true)
+            ->afterStateUpdated(function (Set $set, ?string $state) use ($name) {
+                $extractedId = self::extractGoogleDriveId($state);
+
+                if ($extractedId === null) {
+                    return;
+                }
+
+                if ($extractedId !== $state) {
+                    $set($name, $extractedId);
+                }
+            });
+    }
+
+    /**
+     * Create a textarea that can automatically sync Google Drive ID to a target field
+     */
+    private static function makeDriveAwareTextarea(string $name, string $label, string $targetIdField): Textarea
+    {
+        return Textarea::make($name)
+            ->label($label)
+            ->rows(4)
+            ->autosize()
+            ->live(onBlur: true)
+            ->afterStateUpdated(function (Set $set, ?string $state) use ($targetIdField) {
+                $extractedId = self::extractGoogleDriveId($state);
+
+                if ($extractedId === null) {
+                    return;
+                }
+
+                $set($targetIdField, $extractedId);
+            });
+    }
+
     public static function configure(Schema $schema): Schema
     {
         return $schema
@@ -50,7 +129,10 @@ class SeoAnalyzeForm
                         TextInput::make('url_analisa')
                             ->label('URL Analisa')
                             ->url()
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->disabled()
+                            ->dehydrated(true)
+                            ->hint('Nilai diatur otomatis, tidak dapat diedit.'),
                     ])
                     ->collapsible()
                     ->persistCollapsed()
@@ -63,21 +145,37 @@ class SeoAnalyzeForm
                                 TextInput::make('kata_kunci_serp_kompetitor')
                                     ->label('Kata Kunci SERP Kompetitor')
                                     ->maxLength(255)
+                                    ->live(onBlur: true)
+                                    ->afterStateUpdated(function (Set $set, ?string $state) {
+                                        $extractedId = self::extractGoogleDriveId($state);
+
+                                        if ($extractedId === null) {
+                                            return;
+                                        }
+
+                                        $set('id_daftar_url_serp', $extractedId);
+                                    })
                                     ->columnSpan(1),
                                 TextInput::make('visual_hasil_serp')
                                     ->label('Visual Hasil SERP')
                                     ->maxLength(255)
+                                    ->live(onBlur: true)
+                                    ->afterStateUpdated(function (Set $set, ?string $state) {
+                                        $extractedId = self::extractGoogleDriveId($state);
+
+                                        if ($extractedId === null) {
+                                            return;
+                                        }
+
+                                        $set('id_visual_serp', $extractedId);
+                                    })
                                     ->columnSpan(1),
                             ]),
                         Grid::make(2)
                             ->schema([
-                                TextInput::make('id_visual_serp')
-                                    ->label('ID Visual SERP')
-                                    ->maxLength(255)
+                                self::makeIdInput('id_visual_serp', 'ID Visual SERP')
                                     ->columnSpan(1),
-                                TextInput::make('id_daftar_url_serp')
-                                    ->label('ID Daftar URL SERP')
-                                    ->maxLength(255)
+                                self::makeIdInput('id_daftar_url_serp', 'ID Daftar URL SERP')
                                     ->columnSpan(1),
                             ]),
                         Textarea::make('daftar_5_referensi_url')
@@ -93,24 +191,14 @@ class SeoAnalyzeForm
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                Textarea::make('ringkasan_profil_backlink')
-                                    ->label('Ringkasan Profil Backlink')
-                                    ->rows(4)
-                                    ->autosize()
+                                self::makeDriveAwareTextarea('ringkasan_profil_backlink', 'Ringkasan Profil Backlink', 'id_ringkasan_profil_backlink')
                                     ->columnSpan(2),
-                                TextInput::make('id_ringkasan_profil_backlink')
-                                    ->label('ID Ringkasan Profil Backlink')
-                                    ->maxLength(255)
+                                self::makeIdInput('id_ringkasan_profil_backlink', 'ID Ringkasan Profil Backlink')
                                     ->columnSpan(1),
-                            
-                                Textarea::make('ringkasan_profil_internal_link')
-                                    ->label('Ringkasan Profil Internal Link')
-                                    ->rows(4)
-                                    ->autosize()
+
+                                self::makeDriveAwareTextarea('ringkasan_profil_internal_link', 'Ringkasan Profil Internal Link', 'id_ringkasan_profil_internal_link')
                                     ->columnSpan(2),
-                                TextInput::make('id_ringkasan_profil_internal_link')
-                                    ->label('ID Ringkasan Profil Internal Link')
-                                    ->maxLength(255)
+                                self::makeIdInput('id_ringkasan_profil_internal_link', 'ID Ringkasan Profil Internal Link')
                                     ->columnSpan(1),
                             ]),
                     ])
@@ -122,24 +210,14 @@ class SeoAnalyzeForm
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                Textarea::make('ringkasan_analisa_kata_kunci')
-                                    ->label('Ringkasan Analisa Kata Kunci')
-                                    ->rows(4)
-                                    ->autosize()
+                                self::makeDriveAwareTextarea('ringkasan_analisa_kata_kunci', 'Ringkasan Analisa Kata Kunci', 'id_ringkasan_analisa_kata_kunci')
                                     ->columnSpan(2),
-                                TextInput::make('id_ringkasan_analisa_kata_kunci')
-                                    ->label('ID Ringkasan Analisa Kata Kunci')
-                                    ->maxLength(255)
+                                self::makeIdInput('id_ringkasan_analisa_kata_kunci', 'ID Ringkasan Analisa Kata Kunci')
                                     ->columnSpan(1),
-                            
-                                Textarea::make('ringkasan_volume_kata_kunci')
-                                    ->label('Ringkasan Volume Kata Kunci')
-                                    ->rows(4)
-                                    ->autosize()
+
+                                self::makeDriveAwareTextarea('ringkasan_volume_kata_kunci', 'Ringkasan Volume Kata Kunci', 'id_ringkasan_volume_kata_kunci')
                                     ->columnSpan(2),
-                                TextInput::make('id_ringkasan_volume_kata_kunci')
-                                    ->label('ID Ringkasan Volume Kata Kunci')
-                                    ->maxLength(255)
+                                self::makeIdInput('id_ringkasan_volume_kata_kunci', 'ID Ringkasan Volume Kata Kunci')
                                     ->columnSpan(1),
                             ]),
                     ])
