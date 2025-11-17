@@ -10,6 +10,8 @@ use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Facades\Filament;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -47,6 +49,14 @@ class UserResource extends Resource
                     ->email()
                     ->required()
                     ->unique(ignoreRecord: true),
+                Select::make('role')
+                    ->label('Peran')
+                    ->options([
+                        'super_admin' => 'Super Admin',
+                        'seo_analyst' => 'SEO Analyst',
+                    ])
+                    ->default('seo_analyst')
+                    ->required(),
                 TextInput::make('password')
                     ->label('Password')
                     ->password()
@@ -76,6 +86,13 @@ class UserResource extends Resource
                     ->label('Email')
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('role')
+                    ->label('Peran')
+                    ->badge()
+                    ->formatStateUsing(fn(string $state): string => match ($state) {
+                        'super_admin' => 'Super Admin',
+                        default => 'SEO Analyst',
+                    }),
                 TextColumn::make('created_at')
                     ->label('Dibuat')
                     ->dateTime()
@@ -100,5 +117,45 @@ class UserResource extends Resource
             'create' => CreateUser::route('/create'),
             'edit' => EditUser::route('/{record}/edit'),
         ];
+    }
+
+    protected static function currentUser(): ?User
+    {
+        return Filament::auth()->user();
+    }
+
+    protected static function userIsSuperAdmin(): bool
+    {
+        return static::currentUser()?->isSuperAdmin() ?? false;
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return static::userIsSuperAdmin();
+    }
+
+    public static function canViewAny(): bool
+    {
+        return static::userIsSuperAdmin();
+    }
+
+    public static function canCreate(): bool
+    {
+        return static::userIsSuperAdmin();
+    }
+
+    public static function canEdit($record): bool
+    {
+        return static::userIsSuperAdmin();
+    }
+
+    public static function canDelete($record): bool
+    {
+        return static::userIsSuperAdmin();
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        return static::userIsSuperAdmin();
     }
 }
