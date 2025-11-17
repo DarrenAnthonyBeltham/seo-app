@@ -39,6 +39,7 @@ class SeoAnalyzesTable
                         'daftar kompetitor telah dibuat' => 'Daftar Kompetitor Telah Dibuat',
                         'mulai analisa ke 2' => 'Mulai Analisa Ke 2',
                         'generate to pdf' => 'Generate to PDF',
+                        'pdf generated' => 'PDF Generated',
                     ]),
             ])
             ->searchable(['target_url', 'url_analisa'])
