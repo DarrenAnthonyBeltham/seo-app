@@ -52,7 +52,7 @@ class ListSeoAnalyzes extends ListRecords
                         return;
                     }
 
-                $failed = [];
+                    $failed = [];
 
                     foreach ($records as $record) {
                         $response = Http::withHeaders([
@@ -72,18 +72,18 @@ class ListSeoAnalyzes extends ListRecords
 
                     if (empty($failed)) {
                         Notification::make()
-                        ->title('Webhook berhasil dikirim')
-                        ->body('Semua data berhasil dikirim ke webhook.')
+                            ->title('Webhook berhasil dikirim')
+                            ->body('Semua data berhasil dikirim ke webhook.')
                             ->success()
                             ->send();
                     } else {
                         Notification::make()
                             ->title('Sebagian webhook gagal')
-                            ->body('Gagal untuk ID: '.implode(', ', $failed))
+                            ->body('Gagal untuk ID: ' . implode(', ', $failed))
                             ->danger()
                             ->send();
                     }
-            }),
+                }),
             Actions\Action::make('triggerStartAnalysis')
                 ->label('Mulai Analisa')
                 ->color('warning')
@@ -129,7 +129,9 @@ class ListSeoAnalyzes extends ListRecords
                             'kata_kunci_utama' => $record->kata_kunci_utama,
                         ]);
 
-                        if (! $response->successful()) {
+                        if ($response->successful()) {
+                            $record->update(['status' => 'generate to pdf']);
+                        } else {
                             $failed[] = $record->id;
                         }
                     }
@@ -137,13 +139,13 @@ class ListSeoAnalyzes extends ListRecords
                     if (empty($failed)) {
                         Notification::make()
                             ->title('Webhook Mulai Analisa berhasil dikirim')
-                            ->body('Semua data status Mulai Analisa Ke 2 telah dikirim.')
+                            ->body('Semua data status Mulai Analisa Ke 2 telah dikirim dan diperbarui ke Generate to PDF.')
                             ->success()
                             ->send();
                     } else {
                         Notification::make()
                             ->title('Sebagian webhook Mulai Analisa gagal')
-                            ->body('Gagal untuk ID: '.implode(', ', $failed))
+                            ->body('Gagal untuk ID: ' . implode(', ', $failed))
                             ->danger()
                             ->send();
                     }
