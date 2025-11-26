@@ -39,13 +39,13 @@ class ListSeoAnalyzes extends ListRecords
                         return;
                     }
 
-                    $url = config('services.make_webhook.url');
+                    $url = 'https://hook.eu2.make.com/tloehyubrkr5s3qjkw61w7494xikkdy7';
                     $apiKey = config('services.make_webhook.api_key');
 
-                    if (empty($url) || empty($apiKey)) {
+                    if (empty($apiKey)) {
                         Notification::make()
-                            ->title('Konfigurasi webhook belum lengkap.')
-                            ->body('Pastikan MAKE_WEBHOOK_URL dan MAKE_WEBHOOK_API_KEY sudah diatur.')
+                            ->title('Konfigurasi API key webhook belum lengkap.')
+                            ->body('Pastikan MAKE_WEBHOOK_API_KEY sudah diatur.')
                             ->danger()
                             ->send();
 
